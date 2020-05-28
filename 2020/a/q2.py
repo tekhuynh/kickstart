@@ -1,39 +1,38 @@
-def func():
+def cases():
     n, k, p = map(int, input().split())
-    plates = []
+    stacks = []
     for i in range(n):
-        plates.append(list(map(int, input().split())))
+        stacks.append([int(x) for x in input().split()])
     memo = dict()
-    maxsum = max_beauty(plates, 0, p, memo)
-    print(memo)
+    maxsum = plates(stacks, 0, p, memo)
     return maxsum
 
-def max_beauty(plates, stack, p, memo):
-    if stack >= len(plates):
+def plates(stacks, stack_num, plates_remaining, memo):
+    if stack_num == len(stacks):
         return 0
     
-    if key(stack, p) in memo:
-        return memo[key(stack, p)]
+    currkey = key(stack_num, plates_remaining)
+    if currkey in memo:
+        return memo[currkey]
 
-    maxscore = max_beauty(plates, stack + 1, p, memo)
+    maxsum = plates(stacks, stack_num + 1, plates_remaining, memo)
 
-    stacksum = 0
-    plates_remaining = p
-    for plate in plates[stack]:
+    cumsum = 0
+    for plate in stacks[stack_num]:
         if plates_remaining == 0:
             break
-        stacksum += plate
+        cumsum += plate
         plates_remaining -= 1
-        nextstack = max_beauty(plates, stack + 1, plates_remaining, memo)
-        maxscore = max(maxscore, stacksum + nextstack)
+        next_stack = cumsum + plates(stacks, stack_num + 1, plates_remaining, memo)
+        maxsum = max(maxsum, next_stack)
+    
+    memo[currkey] = maxsum
+    return maxsum
 
-    memo[key(stack, p)] = maxscore
-    return maxscore
-
-def key(stack, p):
-    return "{}-{}".format(stack, p)
+def key(k1, k2):
+    return "{}-{}".format(k1, k2)
 
 
 t = int(input())
 for i in range(t):
-    print("Case #{}: {}".format(i + 1, func()))
+    print("Case #{}: {}".format(i + 1, cases()))
